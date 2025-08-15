@@ -1,0 +1,322 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "User API",
+        "version": "1.0.0",
+        "description": "Здесь находится спецификация запросов для библиотеки из кейса для системных аналитиков"
+    },
+    "paths": null,
+    "/books/add": {
+        "post": {
+            "description:\"Добавить книгу в БД\" parameters": [
+                {
+                    "in": "query",
+                    "name": "id",
+                    "schema": {
+                        "type": "integer",
+                        "example": 345678
+                    },
+                    "required": true
+                },
+                {
+                    "in": "query",
+                    "name": "title",
+                    "schema": {
+                        "type": "string",
+                        "example": "Игра души"
+                    },
+                    "required": true
+                },
+                {
+                    "in": "query",
+                    "name": "author",
+                    "schema": {
+                        "type": "string",
+                        "example": "Иванов Иван Иванович"
+                    },
+                    "required": true
+                },
+                {
+                    "in": "query",
+                    "name": "pub_year",
+                    "schema": {
+                        "type": "integer",
+                        "example": 2025
+                    },
+                    "required": true
+                },
+                {
+                    "in": "query",
+                    "name": "genre",
+                    "schema": {
+                        "type": "string",
+                        "example": "Роман"
+                    },
+                    "required": true
+                }
+            ],
+            "responses": {
+                "201": {
+                    "description": "Книга успешно внесена в базу",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Book"
+                            }
+                        }
+                    }
+                },
+                "409": {
+                    "description": "Книга с таким id уже есть",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Book"
+                            }
+                        }
+                    }
+                }
+            },
+            "/books": {
+                "get": {
+                    "description": "Получить список всех книг"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Список книг получен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Book"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/book/{id}": {
+                "get": {
+                    "description": "Получить информацию о книге по id",
+                    "parameters": {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 123456
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Книга успешно найдена",
+                        "content": null,
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Book"
+                            }
+                        }
+                    },
+                    "404": null,
+                    "description": "Не найдена книга с таким ID"
+                }
+            },
+            "/book/{author}": {
+                "get": "description:'Найти книгу по автору'"
+            },
+            "parameters": {
+                "200": {
+                    "description": "Книга успешно найдена",
+                    "content": null,
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Book"
+                        }
+                    }
+                },
+                "404": null,
+                "in": "path",
+                "name": "author",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "example": "Иванов Иван Иванович"
+                },
+                "responses": null,
+                "description": "Не найдена книга с таким автором"
+            },
+            "/book/{title}": {
+                "get": "description:'Найти книгу по названию'",
+                "parameters": {
+                    "in": "path",
+                    "name": "title",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "example": "Игра души"
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Книга успешно найдена",
+                        "content": null,
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Book"
+                            }
+                        }
+                    },
+                    "404": null,
+                    "description": "Не найдена книга с таким названием"
+                }
+            },
+            "/book/{id}/take": {
+                "200": {
+                    "description": "Книга успешно выдана",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Book"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Неверные данные (например, книга уже выдана)"
+                },
+                "404": {
+                    "description": "Книга или читатель не найдены"
+                },
+                "patch": {
+                    "description": "Записывает, кто взял книгу и дату выдачи",
+                    "parameters": null
+                },
+                "-in": "path",
+                "name": "id",
+                "required": true,
+                "schema": {
+                    "type": "integer",
+                    "description": "ID книги"
+                },
+                "requestBody": {
+                    "required": true
+                },
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "readerId": {
+                                    "type": "integer",
+                                    "description": "ID читателя"
+                                },
+                                "takenAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "Дата и время выдачи"
+                                }
+                            },
+                            "required": [
+                                "readerId",
+                                "takenAt"
+                            ]
+                        }
+                    }
+                },
+                "responses": null
+            },
+            "/book/{id}/return": {
+                "200": {
+                    "description": "Книга успешно сдана",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Book"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Неверные данные (например, книга уже выдана)"
+                },
+                "404": {
+                    "description": "Книга или читатель не найдены"
+                },
+                "patch": {
+                    "description": "Вернуть книгу",
+                    "parameters": null
+                },
+                "-in": "path",
+                "name": "id",
+                "required": true,
+                "schema": {
+                    "type": "integer"
+                },
+                "description": "ID книги",
+                "requestBody": {
+                    "required": true
+                },
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "readerId": {
+                                    "type": "integer",
+                                    "description": "ID читателя required:true"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": null
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Book": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "genre": {
+                        "type": "string"
+                    },
+                    "author": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "available",
+                            "taken"
+                        ]
+                    },
+                    "readerId": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "takenAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "id",
+                    "title",
+                    "status",
+                    "genre"
+                ]
+            }
+        }
+    }
+}
